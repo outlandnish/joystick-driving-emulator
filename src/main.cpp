@@ -122,16 +122,18 @@ void processMachinaData() {
       std::string data = macchina.readStringUntil('\n').c_str();
       auto parts = split(data, ',');
       led_pwm_duty_cycle(LED_RGB_BLUE_IDX, 255);
-      if (parts.size() == 11) {
+      if (parts.size() == 10) {
         try {
           pose.steering = atoi(parts[0].c_str());
           pose.accelerator = atoi(parts[1].c_str());
           pose.brakes = atoi(parts[2].c_str());
-          pose.clutch = atoi(parts[3].c_str()) > 0;
-          pose.upshift = atoi(parts[4].c_str()) > 0;
-          pose.downshift = atoi(parts[5].c_str()) > 0;
-          pose.ebrake = atoi(parts[6].c_str()) > 0;
-          pose.rewind = atoi(parts[7].c_str()) > 0;
+          pose.clutch = atoi(parts[3].c_str());
+          pose.upshift = atoi(parts[4].c_str());
+          pose.downshift = atoi(parts[5].c_str());
+          pose.ebrake = atoi(parts[6].c_str());
+          pose.rewind = atoi(parts[7].c_str());
+          pose.view = atoi(parts[8].c_str());
+          pose.menu = atoi(parts[9].c_str());
 
           newData = true;
         }

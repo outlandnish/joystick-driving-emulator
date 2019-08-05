@@ -21,6 +21,8 @@ struct Pose {
   bool downshift;
   bool ebrake;
   bool rewind;
+  bool view;
+  bool menu;
 };
 
 static Joystick* joystick;
