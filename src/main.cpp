@@ -35,11 +35,12 @@ void setup()
   // monitor serial from macchina
   xTaskCreate((TaskFunction_t)processMachinaData, "macchina", 500, nullptr, 1, &macchinaTaskHandle);
   xTaskCreate((TaskFunction_t)updateJoystick, "joystick", 500, nullptr, 2, &joystickTaskHandle);
+
+  suspendLoop();
 }
 
 void loop()
 {
-  delay(10);
 }
 
 void loadJoystickConfig() {
