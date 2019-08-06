@@ -4,12 +4,11 @@
 
 #include <Arduino.h>
 #include <Joystick.h>
-#include <SoftwareSerial.h>
 
-enum JoystickSide {
+enum JoystickSide : uint8_t {
   Disabled = 0,
-  Left,
-  Right
+  Left = 1,
+  Right = 2
 };
 
 struct Pose {
@@ -32,7 +31,6 @@ static bool newData = false;
 bool sideChanged = false;
 
 JoystickSide side = JoystickSide::Disabled;
-static SoftwareSerial macchina(6, 7);
 
 TaskHandle_t macchinaTaskHandle;
 TaskHandle_t joystickTaskHandle;

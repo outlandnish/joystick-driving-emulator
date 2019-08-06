@@ -454,7 +454,7 @@ Joystick::Joystick(
 
 void Joystick::begin(bool initAutoSendState)
 {
-  _usb_hid.setPollInterval(10);
+  _usb_hid.setPollInterval(2);
   _usb_hid.begin();
 
   while(!USBDevice.mounted()) delay(1);
