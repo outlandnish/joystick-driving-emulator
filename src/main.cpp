@@ -9,9 +9,9 @@ void setup()
   led_pwm_init(LED_RGB_BLUE_IDX, LED_RGB_BLUE_PIN);
 
   // start joystick
-  joystick = new Joystick(JOYSTICK_DEFAULT_REPORT_ID, JOYSTICK_TYPE_GAMEPAD, 8, 0, true, true, true, true, true, true, false, false, false, false, false);
-  joystick->setXAxisRange(-3600, 3600);
-  joystick->setYAxisRange(-255, 255);
+  joystick = new Joystick(JOYSTICK_DEFAULT_REPORT_ID, JOYSTICK_TYPE_GAMEPAD, 8, 0, true, true, false, false, false, false, false, false, false, false, false);
+  joystick->setXAxisRange(-900, 900);
+  joystick->setYAxisRange(-100, 100);
   joystick->begin(false);
 
   // start filesystem
