@@ -1,9 +1,14 @@
+#pragma once 
+
 #include <vector>
 #include <string>
 #include <sstream>
 
 #include <Arduino.h>
+#include <InternalFileSystem.h>
 #include <Joystick.h>
+
+#define STORE_FILE "/config.txt"
 
 enum JoystickSide : uint8_t {
   Disabled = 0,
@@ -36,9 +41,13 @@ TaskHandle_t macchinaTaskHandle;
 TaskHandle_t joystickTaskHandle;
 
 void switchSide();
+void updateSide();
 void lightJoystickSide();
 void processMachinaData();
 void updateJoystick();
+
+void loadJoystickConfig();
+void storeJoystickConfig();
 
 char buffer[256];
 int bIndex = 0;

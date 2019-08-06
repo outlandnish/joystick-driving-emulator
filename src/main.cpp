@@ -8,19 +8,26 @@ void setup()
   led_pwm_init(LED_RGB_GREEN_IDX, LED_RGB_GREEN_PIN);
   led_pwm_init(LED_RGB_BLUE_IDX, LED_RGB_BLUE_PIN);
 
+  // start joystick
   joystick = new Joystick(JOYSTICK_DEFAULT_REPORT_ID, JOYSTICK_TYPE_GAMEPAD, 8, 0, true, true, true, true, true, true, false, false, false, false, false);
   joystick->setXAxisRange(-3600, 3600);
   joystick->setYAxisRange(-255, 255);
   joystick->begin(false);
 
+  // start filesystem
+  InternalFS.begin();
+
+  // start serial for debug
   Serial.begin(115200);
 
+  loadJoystickConfig();
+  updateSide();
+
+  // start serial to macchina
   Serial1.setPins(_PINNUM(0, 8), _PINNUM(0, 6));
   Serial1.begin(115200);
-  delay(2000);
+  delay(50);
   Serial1.flush();
-
-  Serial.println("Started as a joystick...waiting for connection");
 
   Serial.println("Mounted joystick");
   attachInterrupt(20, switchSide, FALLING);
@@ -35,13 +42,46 @@ void loop()
   delay(10);
 }
 
+void loadJoystickConfig() {
+  bool exists = InternalFS.exists(STORE_FILE);
+  if (exists) {
+    auto file = InternalFS.open(STORE_FILE, 0);
+    Serial.println("Config file exists. Reading...");
+    uint32_t readlen;
+    std::string data = file.readStringUntil('\n').c_str();
+    size_t comma = data.find_first_of(',');
+
+    if (comma != std::string::npos) {
+      side = (JoystickSide)atoi(data.substr(comma + 1).c_str());
+      Serial.print("Loaded joystick side: ");
+      Serial.println(side);
+    }
+    else {
+      Serial.println("Poured data not found");
+    }
+
+    file.close();
+  }
+  else {
+    Serial.println("No previous joystick side set");
+  }
+}
+
+void saveJoystickConfig() {
+  if (InternalFS.remove(STORE_FILE))
+    Serial.println("removing store file");
+
+  auto file = InternalFS.open(STORE_FILE, 1);
+  Serial.print("Storing side: ");
+  Serial.println(side);
+  file.printf("poured,%d\n", side);
+  file.close();
+}
+
 void switchSide() {
   switch(side){
     case JoystickSide::Disabled:
       side = JoystickSide::Left;
-      led_pwm_duty_cycle(LED_RGB_RED_IDX, 255);
-      led_pwm_duty_cycle(LED_RGB_GREEN_IDX, 0);
-
       // reset pose
       pose.accelerator = 0;
       pose.brakes = 0;
@@ -56,18 +96,30 @@ void switchSide() {
       break;
     case JoystickSide::Left:
       side = JoystickSide::Right;
-      led_pwm_duty_cycle(LED_RGB_RED_IDX, 0);
-      led_pwm_duty_cycle(LED_RGB_GREEN_IDX, 255);
-
       break;
     case JoystickSide::Right:
       side = JoystickSide::Disabled;
-      led_pwm_duty_cycle(LED_RGB_RED_IDX, 0);
-      led_pwm_duty_cycle(LED_RGB_GREEN_IDX, 0);
-      
       break;
   }
-  sideChanged = true;
+  updateSide();
+  saveJoystickConfig();
+}
+
+void updateSide() {
+  switch (side) {
+    case JoystickSide::Disabled:
+      led_pwm_duty_cycle(LED_RGB_RED_IDX, 0);
+      led_pwm_duty_cycle(LED_RGB_GREEN_IDX, 0);
+    break;
+    case JoystickSide::Left:
+      led_pwm_duty_cycle(LED_RGB_RED_IDX, 255);
+      led_pwm_duty_cycle(LED_RGB_GREEN_IDX, 0);
+    break;
+    case JoystickSide::Right:
+      led_pwm_duty_cycle(LED_RGB_RED_IDX, 0);
+      led_pwm_duty_cycle(LED_RGB_GREEN_IDX, 255);
+    break;
+  }
 }
 
 void updateJoystick() {
