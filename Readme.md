@@ -2,7 +2,7 @@
 
 Emulates an HID device that can be plugged into either the left or right Xbox Adaptive Controller ports. When paired with https://github.com/nsamala/m2-can-forwarder, this can be used to control an Xbox Controller with your car.
 
-Built for the Particle Xenon or any other nRF52840 that can use the Adafruit's nrF52 library.
+Built for the Particle Xenon or any other nRF52840 that can use the Adafruit's nRF52 library.
 
 ## Usage
 
