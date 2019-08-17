@@ -11,7 +11,6 @@ void setup()
   // start joystick
   joystick = new Joystick(JOYSTICK_DEFAULT_REPORT_ID, JOYSTICK_TYPE_GAMEPAD, 8, 0, true, true, false, false, false, false, false, false, false, false, false);
   joystick->setXAxisRange(-900, 900);
-  joystick->setYAxisRange(-100, 100);
   joystick->begin(false);
 
   // start filesystem
@@ -130,9 +129,6 @@ void updateJoystick() {
         case JoystickSide::Left:
           // steering
           joystick->setXAxis(pose.steering);
-
-          // brakes
-          joystick->setYAxis(-pose.brakes);
           
           // clutch
           pose.clutch ? joystick->pressButton(XboxButtons::LEFT_BUMPER) : joystick->releaseButton(XboxButtons::LEFT_BUMPER);
@@ -142,11 +138,14 @@ void updateJoystick() {
 
           // upshift
           pose.upshift ? joystick->pressButton(XboxButtons::B) : joystick->releaseButton(XboxButtons::B);
+
+          // downshift: remap X1 on Adaptive Controller to X
+          pose.downshift ? joystick->pressButton(XboxButtons::LEFT_X1) : joystick->releaseButton(XboxButtons::LEFT_X1);
+
+          // rewind: remap X2 on Adaptive Controller to Y
+          pose.rewind ? joystick->pressButton(XboxButtons::LEFT_X2) : joystick->releaseButton(XboxButtons::LEFT_X2);
           break;
         case JoystickSide::Right:
-          // accelerator
-          joystick->setYAxis(-pose.accelerator);
-
           // downshift
           pose.downshift ? joystick->pressButton(XboxButtons::X) : joystick->releaseButton(XboxButtons::X);
 
