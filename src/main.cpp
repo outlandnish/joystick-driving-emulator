@@ -93,6 +93,8 @@ void switchSide() {
       pose.rewind = 0;
       pose.upshift = 0;
       pose.view = 0;
+
+      newData = true;
       break;
     case JoystickSide::Left:
       side = JoystickSide::Right;
@@ -108,14 +110,17 @@ void switchSide() {
 void updateSide() {
   switch (side) {
     case JoystickSide::Disabled:
+      // both leds off
       led_pwm_duty_cycle(LED_RGB_RED_IDX, 0);
       led_pwm_duty_cycle(LED_RGB_GREEN_IDX, 0);
     break;
     case JoystickSide::Left:
+      // red on
       led_pwm_duty_cycle(LED_RGB_RED_IDX, 255);
       led_pwm_duty_cycle(LED_RGB_GREEN_IDX, 0);
     break;
     case JoystickSide::Right:
+      // green on
       led_pwm_duty_cycle(LED_RGB_RED_IDX, 0);
       led_pwm_duty_cycle(LED_RGB_GREEN_IDX, 255);
     break;
@@ -153,8 +158,7 @@ void updateJoystick() {
           pose.rewind ? joystick->pressButton(XboxButtons::Y) : joystick->releaseButton(XboxButtons::Y);
           break;
       }
-      if (side != JoystickSide::Disabled)
-        joystick->sendState();
+      joystick->sendState();
       newData = false;
     }
     delay(10);
@@ -171,7 +175,9 @@ void processMachinaData() {
       std::string data = Serial1.readStringUntil('\n').c_str();
       auto parts = split(data, ',');
       if (parts.size() >= 10 && side != JoystickSide::Disabled) {
+        // flash blue led every time we have valid data
         led_pwm_duty_cycle(LED_RGB_BLUE_IDX, 255);
+
         try {
           pose.steering = atoi(parts[0].c_str());
           pose.accelerator = atoi(parts[1].c_str());
